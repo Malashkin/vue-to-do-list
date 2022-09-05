@@ -34,7 +34,11 @@
       </div>
       <div class="buttons">
         <button class="button button__add" @click="addNewNote">Add</button>
-        <button class="button button__filter" @click="filterShorts">
+        <button
+          class="button button__filter"
+          @click="filterShorts"
+          v-if="notes.length !== 0"
+        >
           Filter shorts
         </button>
       </div>
@@ -210,13 +214,6 @@ form {
 
 .list-item_normal {
   color: teal;
-}
-
-.btn-delete {
-  padding: 10px 15px;
-  background: none;
-  color: teal;
-  cursor: pointer;
 }
 
 .caution {
