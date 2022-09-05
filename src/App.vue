@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <div class="card">
+    <div class="card" v-cloak>
       <h1
         class="card__title"
         :style="{
@@ -18,25 +18,44 @@
         <input
           class="input"
           type="text"
-          :placeholder="placeholderString"
-          v-model="inputValue"
+          :placeholder="placeholderInputText"
+          v-model="inputValueText"
           @keypress.enter="addNewNote"
+          required
+        />
+        <input
+          class="input"
+          type="number"
+          :placeholder="placeholderInputTime"
+          v-model="inputValueTime"
+          @keypress.enter="addNewNote"
+          required
         />
       </div>
-      <button class="btn" @click="addNewNote">Add</button>
-
+      <div class="buttons">
+        <button class="button button__add" @click="addNewNote">Add</button>
+        <button class="button button__filter" @click="filterShorts">
+          Filter shorts
+        </button>
+      </div>
       <hr />
       <ul class="list" v-if="notes.length !== 0">
-        <li class="list-item" v-for="(note, idx) of notes" :key="idx">
+        <li class="list-item" v-for="(note, idx) of notes" :key="note">
           <span
             :class="{
               'list-item_bold': note.length < 6,
               'list-item_normal': note.length > 5,
             }"
           >
-            {{ toUpperCase(note) }}
+            {{ note }}
           </span>
-          <button class="btn-delete" @click="deleteNote(idx)">Delete</button>
+          <div>
+            <p>
+              <button class="button button__delete" @click="deleteNote(idx)">
+                Delete
+              </button>
+            </p>
+          </div>
         </li>
         <li>
           <strong>Total amount of notes: {{ notes.length }}</strong> | Doubling
@@ -44,8 +63,7 @@
           {{ doubleCount }}
         </li>
       </ul>
-
-      <div class="caution" v-if="notes.length === 0">
+      <div class="caution" v-show="notes.length === 0">
         Notes list is empty now, use input and button "Add" / press "Enter" to
         create note.
       </div>
@@ -59,24 +77,37 @@ export default {
   data() {
     return {
       title: "To Do List",
-      placeholderString: "Enter note title",
-      inputValue: "",
+      placeholderInputText: "Enter note title",
+      placeholderInputTime: "Enter duration",
+      inputValueText: "",
+      inputValueTime: "",
+      editButtonIsClicked: false,
       notes: [],
     };
   },
   methods: {
     addNewNote() {
-      if (this.inputValue !== "") {
-        this.notes.push(this.inputValue);
-        this.inputValue = "";
+      if (this.inputValueText !== "" && this.inputValueTime !== "") {
+        const data = [
+          this.inputValueText + ". I will spend",
+          this.inputValueTime + " min",
+        ];
+        const res = data.join(": ");
+        this.notes.push(res);
+        this.inputValueText = "";
+        this.inputValueTime = "";
       }
+    },
+    filterShorts() {
+      const res = this.notes.filter((i) => {
+        const duration = i.split(": ");
+        const minutes = duration[1].split(" ");
+        return minutes[0] < 15;
+      });
+      return (this.notes = res);
     },
     deleteNote(idx) {
       this.notes.splice(idx, 1);
-    },
-    toUpperCase(item) {
-      const newItem = item[0].toUpperCase() + item.slice(1);
-      return newItem;
     },
   },
   computed: {
@@ -128,7 +159,12 @@ form {
   margin-top: 15px;
 }
 
-.btn {
+.buttons {
+  display: flex;
+  align-items: center;
+}
+
+.button {
   margin-bottom: 10px;
   padding: 10px 15px;
   background: none;
@@ -136,6 +172,22 @@ form {
   cursor: pointer;
   align-self: flex-start;
   margin-top: 15px;
+}
+
+.button__add {
+  margin-right: 15px;
+}
+
+.button__filter {
+  color: blue;
+}
+
+.button__edit {
+  margin: 0 15px 0 0;
+}
+
+.button__delete {
+  color: orange;
 }
 
 .list {
