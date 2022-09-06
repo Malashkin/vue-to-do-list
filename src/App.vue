@@ -54,17 +54,31 @@
             {{ note }}
           </span>
           <div>
-            <p>
+            <div>
+              <button class="button button__done" @click="clickDone(idx)">
+                Done
+              </button>
               <button class="button button__delete" @click="deleteNote(idx)">
                 Delete
               </button>
-            </p>
+            </div>
           </div>
         </li>
-        <li>
-          <strong>Total amount of notes: {{ notes.length }}</strong> | Doubling
-          with 1 render:
-          {{ doubleCount }}
+        <li class="card__info">
+          <strong>Total amount of notes: {{ notes.length }}</strong>
+          <strong> Doubling with 1 render: {{ doubleCount }}</strong>
+          <div class="card__motivation">
+            <strong>Today you have done: {{ doneCounter }} </strong>
+            <p class="card__motivation-text" v-show="doneCounter <= 2">
+              You can do much more!
+            </p>
+            <p
+              class="card__motivation-text card__motivation-text_success"
+              v-show="doneCounter > 2"
+            >
+              Not bad!
+            </p>
+          </div>
         </li>
       </ul>
       <div class="caution" v-show="notes.length === 0">
@@ -85,7 +99,7 @@ export default {
       placeholderInputTime: "Enter duration",
       inputValueText: "",
       inputValueTime: "",
-      editButtonIsClicked: false,
+      doneCounter: 0,
       notes: [],
     };
   },
@@ -109,6 +123,10 @@ export default {
         return minutes[0] < 15;
       });
       return (this.notes = res);
+    },
+    clickDone(idx) {
+      this.notes.splice(idx, 1);
+      this.doneCounter += 1;
     },
     deleteNote(idx) {
       this.notes.splice(idx, 1);
@@ -143,12 +161,35 @@ export default {
 .card {
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .card__title {
   font-size: 20px;
 }
-form {
+
+.card__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.card__motivation {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.card__motivation-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: orange;
+}
+
+.card__motivation-text_success {
+  color: green;
+}
+
+.form {
   display: flex;
   flex-direction: column;
 }
@@ -187,6 +228,10 @@ form {
 }
 
 .button__edit {
+  margin: 0 15px 0 0;
+}
+
+.button__done {
   margin: 0 15px 0 0;
 }
 
