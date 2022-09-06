@@ -1,4 +1,4 @@
-# basics
+# Изучание Vue
 
 ## Project setup
 ```
